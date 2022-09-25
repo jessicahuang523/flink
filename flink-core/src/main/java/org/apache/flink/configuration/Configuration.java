@@ -727,7 +727,7 @@ public class Configuration extends ExecutionConfig.GlobalJobParameters
     @Override
     public <T> Configuration set(ConfigOption<T> option, T value) {
         final boolean canBePrefixMap = canBePrefixMap(option);
-        setValueInternal(option.key(), value, canBePrefixMap);
+        setValueInternal(option.key(), value, canBePrefixMap);//ctest
         return this;
     }
 
@@ -765,9 +765,18 @@ public class Configuration extends ExecutionConfig.GlobalJobParameters
         }
     }
 
+    //Ctest Get Trace
+    private String getStackTrace() {
+    String stacktrace = " ";
+    for (StackTraceElement e : Thread.currentThread().getStackTrace()) {
+      stacktrace = stacktrace.concat(
+          e.getClassName() + "#" + e.getMethodName() + "#" + e.getLineNumber() + "\t");
+    }
+    return stacktrace;
+  }
     // --------------------------------------------------------------------------------------------
 
-    <T> void setValueInternal(String key, T value, boolean canBePrefixMap) {
+    <T> void setValueInternal(String key, T value, boolean canBePrefixMap, boolean logenabled) {
         if (key == null) {
             throw new NullPointerException("Key must not be null.");
         }
@@ -779,12 +788,20 @@ public class Configuration extends ExecutionConfig.GlobalJobParameters
             if (canBePrefixMap) {
                 removePrefixMap(this.confData, key);
             }
+            if(logenabled){
+                LOG.warn("[CTEST][SET-PARAM] " + name + getStackTrace()); //ctest
+            }
             this.confData.put(key, value);
         }
     }
 
     private <T> void setValueInternal(String key, T value) {
-        setValueInternal(key, value, false);
+        setValueInternal(key, value, false, true);
+    }
+
+    //ctest
+    private <T> void setValueInternal(String key, T value, boolean canBePrefixMap) {//ctest
+        setValueInternal(key, value, canBePrefixMap, true);
     }
 
     private Optional<Object> getRawValue(String key) {
@@ -792,6 +809,7 @@ public class Configuration extends ExecutionConfig.GlobalJobParameters
     }
 
     private Optional<Object> getRawValue(String key, boolean canBePrefixMap) {
+        String ctestParam = key;//ctest
         if (key == null) {
             throw new NullPointerException("Key must not be null.");
         }
@@ -799,13 +817,16 @@ public class Configuration extends ExecutionConfig.GlobalJobParameters
         synchronized (this.confData) {
             final Object valueFromExactKey = this.confData.get(key);
             if (!canBePrefixMap || valueFromExactKey != null) {
+                LOG.warn("[CTEST][GET-PARAM] " + ctestParam);//ctest
                 return Optional.ofNullable(valueFromExactKey);
             }
             final Map<String, String> valueFromPrefixMap =
                     convertToPropertiesPrefixed(confData, key);
             if (valueFromPrefixMap.isEmpty()) {
+                LOG.warn("[CTEST][GET-PARAM] " + ctestParam);//ctest
                 return Optional.empty();
             }
+            LOG.warn("[CTEST][GET-PARAM] " + ctestParam); //ctest
             return Optional.of(valueFromPrefixMap);
         }
     }
