@@ -806,7 +806,7 @@ public class Configuration extends ExecutionConfig.GlobalJobParameters
     }
 
     // ctest
-    private <T> void setValueInternal(String key, T value, boolean canBePrefixMap) { // ctest
+    <T> void setValueInternal(String key, T value, boolean canBePrefixMap) { // ctest
         setValueInternal(key, value, canBePrefixMap, true);
     }
 
@@ -823,16 +823,16 @@ public class Configuration extends ExecutionConfig.GlobalJobParameters
         synchronized (this.confData) {
             final Object valueFromExactKey = this.confData.get(key);
             if (!canBePrefixMap || valueFromExactKey != null) {
-                LOG.warn("[CTEST][GET-PARAM] " + ctestParam); // ctest
+                LOG.warn("[CTEST][GET-PARAM] " + ctestParam + getStackTrace()); // ctest
                 return Optional.ofNullable(valueFromExactKey);
             }
             final Map<String, String> valueFromPrefixMap =
                     convertToPropertiesPrefixed(confData, key);
             if (valueFromPrefixMap.isEmpty()) {
-                LOG.warn("[CTEST][GET-PARAM] " + ctestParam); // ctest
+                LOG.warn("[CTEST][GET-PARAM] " + ctestParam + getStackTrace()); // ctest
                 return Optional.empty();
             }
-            LOG.warn("[CTEST][GET-PARAM] " + ctestParam); // ctest
+            LOG.warn("[CTEST][GET-PARAM] " + ctestParam + getStackTrace()); // ctest
             return Optional.of(valueFromPrefixMap);
         }
     }
