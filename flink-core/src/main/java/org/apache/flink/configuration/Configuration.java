@@ -801,12 +801,12 @@ public class Configuration extends ExecutionConfig.GlobalJobParameters
         }
     }
 
-    public <T> void setValueInternal(String key, T value) {
+    private <T> void setValueInternal(String key, T value) {
         setValueInternal(key, value, false, true);
     }
 
     // ctest
-    public <T> void setValueInternal(String key, T value, boolean canBePrefixMap) { // ctest
+    private <T> void setValueInternal(String key, T value, boolean canBePrefixMap) { // ctest
         setValueInternal(key, value, canBePrefixMap, true);
     }
 
