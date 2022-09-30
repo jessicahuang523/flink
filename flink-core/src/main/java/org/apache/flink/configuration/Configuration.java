@@ -794,10 +794,8 @@ public class Configuration extends ExecutionConfig.GlobalJobParameters
                 removePrefixMap(this.confData, key);
             }
             final Object valueFromExactKey = this.confData.get(key);
-            String ctestParam =
-                    valueFromExactKey == null ? "" : valueFromExactKey.toString(); // ctest
             if (logenabled) {
-                LOG.warn("[CTEST][SET-PARAM] " + ctestParam + getStackTrace()); // ctest
+                LOG.warn("[CTEST][SET-PARAM] " + key + getStackTrace()); // ctest
             }
             this.confData.put(key, value);
         }
@@ -824,18 +822,17 @@ public class Configuration extends ExecutionConfig.GlobalJobParameters
         synchronized (this.confData) {
             final Object valueFromExactKey = this.confData.get(key);
             if (!canBePrefixMap || valueFromExactKey != null) {
-                String ctestParam = valueFromExactKey == null ? "" : valueFromExactKey.toString();
-                LOG.warn("[CTEST][GET-PARAM] " + ctestParam + getStackTrace()); // ctest
+                LOG.warn("[CTEST][GET-PARAM] " + key + getStackTrace()); // ctest
                 return Optional.ofNullable(valueFromExactKey);
             }
             final Map<String, String> valueFromPrefixMap =
                     convertToPropertiesPrefixed(confData, key);
             if (valueFromPrefixMap.isEmpty()) {
-                LOG.warn("[CTEST][GET-PARAM] " + "" + getStackTrace()); // ctest
+                LOG.warn("[CTEST][GET-PARAM] " + key + getStackTrace()); // ctest
                 return Optional.empty();
             }
             String ctestParam = valueFromPrefixMap.toString(); // ctest
-            LOG.warn("[CTEST][GET-PARAM] " + ctestParam + getStackTrace()); // ctest
+            LOG.warn("[CTEST][GET-PARAM] " + key + getStackTrace()); // ctest
             return Optional.of(valueFromPrefixMap);
         }
     }
