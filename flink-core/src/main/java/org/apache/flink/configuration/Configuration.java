@@ -789,11 +789,13 @@ public class Configuration extends ExecutionConfig.GlobalJobParameters
         if (value == null) {
             throw new NullPointerException("Value must not be null.");
         }
-        String ctestParam = key; // ctest
         synchronized (this.confData) {
             if (canBePrefixMap) {
                 removePrefixMap(this.confData, key);
             }
+            final Object valueFromExactKey = this.confData.get(key);
+            String ctestParam =
+                    valueFromExactKey == null ? "" : valueFromExactKey.toString(); // ctest
             if (logenabled) {
                 LOG.warn("[CTEST][SET-PARAM] " + ctestParam + getStackTrace()); // ctest
             }
@@ -815,7 +817,6 @@ public class Configuration extends ExecutionConfig.GlobalJobParameters
     }
 
     private Optional<Object> getRawValue(String key, boolean canBePrefixMap) {
-        String ctestParam = key; // ctest
         if (key == null) {
             throw new NullPointerException("Key must not be null.");
         }
@@ -823,15 +824,17 @@ public class Configuration extends ExecutionConfig.GlobalJobParameters
         synchronized (this.confData) {
             final Object valueFromExactKey = this.confData.get(key);
             if (!canBePrefixMap || valueFromExactKey != null) {
+                String ctestParam = valueFromExactKey == null ? "" : valueFromExactKey.toString();
                 LOG.warn("[CTEST][GET-PARAM] " + ctestParam + getStackTrace()); // ctest
                 return Optional.ofNullable(valueFromExactKey);
             }
             final Map<String, String> valueFromPrefixMap =
                     convertToPropertiesPrefixed(confData, key);
             if (valueFromPrefixMap.isEmpty()) {
-                LOG.warn("[CTEST][GET-PARAM] " + ctestParam + getStackTrace()); // ctest
+                LOG.warn("[CTEST][GET-PARAM] " + "" + getStackTrace()); // ctest
                 return Optional.empty();
             }
+            String ctestParam = valueFromPrefixMap.toString(); // ctest
             LOG.warn("[CTEST][GET-PARAM] " + ctestParam + getStackTrace()); // ctest
             return Optional.of(valueFromPrefixMap);
         }
