@@ -822,17 +822,16 @@ public class Configuration extends ExecutionConfig.GlobalJobParameters
         synchronized (this.confData) {
             final Object valueFromExactKey = this.confData.get(key);
             if (!canBePrefixMap || valueFromExactKey != null) {
-                LOG.warn("[CTEST][GET-PARAM] " + key + getStackTrace()); // ctest
+                LOG.warn("[CTEST][GET-PARAM] " + key); // ctest
                 return Optional.ofNullable(valueFromExactKey);
             }
             final Map<String, String> valueFromPrefixMap =
                     convertToPropertiesPrefixed(confData, key);
             if (valueFromPrefixMap.isEmpty()) {
-                LOG.warn("[CTEST][GET-PARAM] " + key + getStackTrace()); // ctest
+                LOG.warn("[CTEST][GET-PARAM] " + key); // ctest
                 return Optional.empty();
             }
-            String ctestParam = valueFromPrefixMap.toString(); // ctest
-            LOG.warn("[CTEST][GET-PARAM] " + key + getStackTrace()); // ctest
+            LOG.warn("[CTEST][GET-PARAM] " + key); // ctest
             return Optional.of(valueFromPrefixMap);
         }
     }
