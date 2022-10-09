@@ -769,14 +769,7 @@ public class Configuration extends ExecutionConfig.GlobalJobParameters
     private String getStackTrace() {
         String stacktrace = " ";
         for (StackTraceElement e : Thread.currentThread().getStackTrace()) {
-            stacktrace =
-                    stacktrace.concat(
-                            e.getClassName()
-                                    + "#"
-                                    + e.getMethodName()
-                                    + "#"
-                                    + e.getLineNumber()
-                                    + "\t");
+            stacktrace = stacktrace.concat(e.getClassName() + "\t");
         }
         return stacktrace;
     }
@@ -821,17 +814,15 @@ public class Configuration extends ExecutionConfig.GlobalJobParameters
 
         synchronized (this.confData) {
             final Object valueFromExactKey = this.confData.get(key);
+            LOG.warn("[CTEST][GET-PARAM] " + key); // ctest
             if (!canBePrefixMap || valueFromExactKey != null) {
-                LOG.warn("[CTEST][GET-PARAM] " + key); // ctest
                 return Optional.ofNullable(valueFromExactKey);
             }
             final Map<String, String> valueFromPrefixMap =
                     convertToPropertiesPrefixed(confData, key);
             if (valueFromPrefixMap.isEmpty()) {
-                LOG.warn("[CTEST][GET-PARAM] " + key); // ctest
                 return Optional.empty();
             }
-            LOG.warn("[CTEST][GET-PARAM] " + key); // ctest
             return Optional.of(valueFromPrefixMap);
         }
     }

@@ -79,7 +79,7 @@ public class ConfigurationTest extends TestLogger {
             orig.setFloat("PI", 3.1415926f);
             orig.setDouble("E", Math.E);
             orig.setBoolean("shouldbetrue", true);
-            orig.setBytes("bytes sequence", new byte[] {1, 2, 3, 4, 5});
+            orig.setBytes("bytes_sequence", new byte[] {1, 2, 3, 4, 5});
             orig.setClass("myclass", this.getClass());
 
             final Configuration copy = InstantiationUtil.createCopyWritable(orig);
@@ -89,7 +89,7 @@ public class ConfigurationTest extends TestLogger {
             assertEquals(3.1415926f, copy.getFloat("PI", 3.1415926f), 0.0);
             assertEquals(Math.E, copy.getDouble("E", 0.0), 0.0);
             assertEquals(true, copy.getBoolean("shouldbetrue", false));
-            assertArrayEquals(new byte[] {1, 2, 3, 4, 5}, copy.getBytes("bytes sequence", null));
+            assertArrayEquals(new byte[] {1, 2, 3, 4, 5}, copy.getBytes("bytes_sequence", null));
             assertEquals(getClass(), copy.getClass("myclass", null, getClass().getClassLoader()));
 
             assertEquals(orig, copy);
