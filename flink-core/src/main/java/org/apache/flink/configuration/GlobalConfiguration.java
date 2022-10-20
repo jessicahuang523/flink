@@ -41,7 +41,7 @@ public final class GlobalConfiguration {
 
     private static final Logger LOG = LoggerFactory.getLogger(GlobalConfiguration.class);
 
-    public static final String FLINK_CONF_FILENAME = "flink-conf.yaml";
+    public static final String FLINK_CONF_FILENAME = "core-ctest.yaml"; // ctest
 
     // the keys whose values should be hidden
     private static final String[] SENSITIVE_KEYS =
@@ -75,7 +75,8 @@ public final class GlobalConfiguration {
      * @return Returns the loaded global configuration with dynamic properties
      */
     public static Configuration loadConfiguration(Configuration dynamicProperties) {
-        final String configDir = System.getenv(ConfigConstants.ENV_FLINK_CONF_DIR);
+        // final String configDir = System.getenv(ConfigConstants.ENV_FLINK_CONF_DIR);
+        final String configDir = System.getProperty("user.dir"); // ctest
         if (configDir == null) {
             return new Configuration(dynamicProperties);
         }
