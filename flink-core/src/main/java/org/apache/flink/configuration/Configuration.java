@@ -29,7 +29,11 @@ import org.apache.flink.types.StringValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -63,6 +67,7 @@ public class Configuration extends ExecutionConfig.GlobalJobParameters
     private static final byte TYPE_FLOAT = 4;
     private static final byte TYPE_DOUBLE = 5;
     private static final byte TYPE_BYTES = 6;
+    private static boolean isFirstThread = true;
 
     /** The log object used for debugging. */
     private static final Logger LOG = LoggerFactory.getLogger(Configuration.class);
@@ -75,6 +80,76 @@ public class Configuration extends ExecutionConfig.GlobalJobParameters
     /** Creates a new empty configuration. */
     public Configuration() {
         this.confData = new HashMap<>();
+        if (isFirstThreadAndFlip()) {
+            ctestInject();
+        }
+    }
+
+    // Ctest
+    private synchronized boolean isFirstThreadAndFlip() {
+        boolean tmp = isFirstThread;
+        isFirstThread = false;
+        return tmp;
+    }
+
+    // Ctest
+    private void ctestInject() {
+        String f = System.getProperty("user.dir") + "/core-ctest.yaml";
+        final File file = new File(f);
+        try (BufferedReader reader =
+                new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
+
+            String line;
+            int lineNo = 0;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+                lineNo++;
+                // 1. check for comments
+                String[] comments = line.split("#", 2);
+                String conf = comments[0].trim();
+
+                // 2. get key and value
+                if (conf.length() > 0) {
+                    String[] kv = conf.split(": ", 2);
+
+                    // skip line with no valid key-value pair
+                    if (kv.length == 1) {
+                        LOG.warn(
+                                "Error while trying to split key and value in configuration file "
+                                        + file
+                                        + ":"
+                                        + lineNo
+                                        + ": \""
+                                        + line
+                                        + "\"");
+                        continue;
+                    }
+
+                    String key = kv[0].trim();
+                    String value = kv[1].trim();
+
+                    // sanity check
+                    if (key.length() == 0 || value.length() == 0) {
+                        LOG.warn(
+                                "Error after splitting key and value in configuration file "
+                                        + file
+                                        + ":"
+                                        + lineNo
+                                        + ": \""
+                                        + line
+                                        + "\"");
+                        continue;
+                    }
+
+                    setString(key, value);
+                    System.out.println("LOADING:");
+                    System.out.println(key);
+                    System.out.println(value);
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Error parsing YAML configuration.", e);
+        }
     }
 
     /**
