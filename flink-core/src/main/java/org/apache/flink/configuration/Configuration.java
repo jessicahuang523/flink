@@ -102,7 +102,6 @@ public class Configuration extends ExecutionConfig.GlobalJobParameters
             String line;
             int lineNo = 0;
             while ((line = reader.readLine()) != null) {
-                System.out.println(line);
                 lineNo++;
                 // 1. check for comments
                 String[] comments = line.split("#", 2);
@@ -142,9 +141,6 @@ public class Configuration extends ExecutionConfig.GlobalJobParameters
                     }
 
                     setString(key, value);
-                    System.out.println("LOADING:");
-                    System.out.println(key);
-                    System.out.println(value);
                 }
             }
         } catch (IOException e) {
